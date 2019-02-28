@@ -21,9 +21,9 @@ Eigen::Vector3d phi_projection_function(const Eigen::Matrix3d& K,
                                         const Eigen::Vector3d& t, 
                                         const Eigen::Vector3d& point)
 {
-      const Eigen::Vector3d point_in_camera = R * point + t;
-      const Eigen::Vector3d point_in_image = K * point_in_camera;
-      return point_in_image / point_in_camera(2);
+    //   const Eigen::Vector3d point_in_camera = R * point + t;
+      const Eigen::Vector3d point_in_image = K * (R * point + t);
+      return point_in_image / point_in_image(2);
 }
 
 Eigen::VectorXd compute_homograpy_DLT(const Eigen::MatrixXd& M, const Eigen::MatrixXd& P)
@@ -49,67 +49,72 @@ Eigen::VectorXd compute_homograpy_DLT(const Eigen::MatrixXd& M, const Eigen::Mat
 int main()
 {
     auto start = std::chrono::high_resolution_clock::now();
-    Eigen::Matrix3d K;
-    K << 1169.19630, 0.0, 652.98743, 0.0, 1169.61014, 528.83429, 0.0, 0.0, 1.0;
-    Eigen::MatrixXd T(3,4);
-    T << 0.961255, -0.275448, 0.0108487,    112.79, 0.171961,  0.629936,   0.75737,  -217.627,
-        -0.21545,  -0.72616,  0.652895,   1385.13;
-    // std::cout << "K: " << K << std::endl;
-    // std::cout << "T: " << T << std::endl;
+    const int repeat = 100000;
+    for (int i(0); i < repeat; i++)
+    {
+        Eigen::Matrix3d K;
+        K << 1169.19630, 0.0, 652.98743, 0.0, 1169.61014, 528.83429, 0.0, 0.0, 1.0;
+        Eigen::MatrixXd T(3,4);
+        T << 0.961255, -0.275448, 0.0108487,    112.79, 0.171961,  0.629936,   0.75737,  -217.627,
+            -0.21545,  -0.72616,  0.652895,   1385.13;
+        // std::cout << "K: " << K << std::endl;
+        // std::cout << "T: " << T << std::endl;
 
-    const auto& R = T.block(0,0,3,3);
-    const auto& t = T.col(3);
-    // auto end1 = std::chrono::high_resolution_clock::now();
-    // std::cout << "elapsed time K,T,R,t (ns): "
-    //               << std::chrono::duration_cast< std::chrono::nanoseconds >( end1 - start ).count() << std::endl;
-    // std::cout << "R: " << R << std::endl;
-    // std::cout << "t: " << t << std::endl;
+        const auto& R = T.block(0,0,3,3);
+        const auto& t = T.col(3);
+        // auto end1 = std::chrono::high_resolution_clock::now();
+        // std::cout << "elapsed time K,T,R,t (ns): "
+        //               << std::chrono::duration_cast< std::chrono::nanoseconds >( end1 - start ).count() << std::endl;
+        // std::cout << "R: " << R << std::endl;
+        // std::cout << "t: " << t << std::endl;
 
-    const Eigen::Vector3d tl = position_in_world(0.0, 0.0);
-    const Eigen::Vector3d tr = position_in_world(1123.0, 0.0);
-    const Eigen::Vector3d br = position_in_world(1123.0, 791.0);
-    const Eigen::Vector3d bl = position_in_world(0.0, 791.0);
-    // std::cout << "tl: " << tl.transpose() << std::endl;
-    // std::cout << "tr: " << tr.transpose() << std::endl;
-    // std::cout << "br: " << br.transpose() << std::endl;
-    // std::cout << "bl: " << bl.transpose() << std::endl;
-    // auto end2 = std::chrono::high_resolution_clock::now();
-    // std::cout << "elapsed time function point in world (ns): "
-    //               << std::chrono::duration_cast< std::chrono::nanoseconds >( end2 - start ).count() << std::endl;
+        const Eigen::Vector3d tl = position_in_world(0.0, 0.0);
+        const Eigen::Vector3d tr = position_in_world(1123.0, 0.0);
+        const Eigen::Vector3d br = position_in_world(1123.0, 791.0);
+        const Eigen::Vector3d bl = position_in_world(0.0, 791.0);
+        // std::cout << "tl: " << tl.transpose() << std::endl;
+        // std::cout << "tr: " << tr.transpose() << std::endl;
+        // std::cout << "br: " << br.transpose() << std::endl;
+        // std::cout << "bl: " << bl.transpose() << std::endl;
+        // auto end2 = std::chrono::high_resolution_clock::now();
+        // std::cout << "elapsed time function point in world (ns): "
+        //               << std::chrono::duration_cast< std::chrono::nanoseconds >( end2 - start ).count() << std::endl;
 
-    const Eigen::Vector3d p1 = phi_projection_function(K, R, t, tl);
-    const Eigen::Vector3d p2 = phi_projection_function(K, R, t, tr);
-    const Eigen::Vector3d p3 = phi_projection_function(K, R, t, br);
-    const Eigen::Vector3d p4 = phi_projection_function(K, R, t, bl);
-    // auto end3 = std::chrono::high_resolution_clock::now();
-    // std::cout << "elapsed time function phi (ns): "
-    //               << std::chrono::duration_cast< std::chrono::nanoseconds >( end3 - start ).count() << std::endl;
+        const Eigen::Vector3d p1 = phi_projection_function(K, R, t, tl);
+        const Eigen::Vector3d p2 = phi_projection_function(K, R, t, tr);
+        const Eigen::Vector3d p3 = phi_projection_function(K, R, t, br);
+        const Eigen::Vector3d p4 = phi_projection_function(K, R, t, bl);
+        // auto end3 = std::chrono::high_resolution_clock::now();
+        // std::cout << "elapsed time function phi (ns): "
+        //               << std::chrono::duration_cast< std::chrono::nanoseconds >( end3 - start ).count() << std::endl;
 
-    Eigen::MatrixXd P(4, 3);
-    P.row(0) = p1;
-    P.row(1) = p2;
-    P.row(2) = p3;
-    P.row(3) = p4;
-    // std::cout << "P: \n" << P << std::endl;
+        Eigen::MatrixXd P(4, 3);
+        P.row(0) = p1;
+        P.row(1) = p2;
+        P.row(2) = p3;
+        P.row(3) = p4;
+        // std::cout << "P: \n" << P << std::endl;
 
-    const Eigen::Vector3d m1(0.0, 0.0, 1.0);
-    const Eigen::Vector3d m2(1123.0, 0.0, 1.0);
-    const Eigen::Vector3d m3(1123.0, 791.0, 1.0);
-    const Eigen::Vector3d m4(0.0, 791.0, 1.0);
-    Eigen::MatrixXd M(4,3);
-    M.row(0) = m1;
-    M.row(1) = m2;
-    M.row(2) = m3;
-    M.row(3) = m4;
-    // std::cout << "M: \n" << M << std::endl;
+        const Eigen::Vector3d m1(0.0, 0.0, 1.0);
+        const Eigen::Vector3d m2(1123.0, 0.0, 1.0);
+        const Eigen::Vector3d m3(1123.0, 791.0, 1.0);
+        const Eigen::Vector3d m4(0.0, 791.0, 1.0);
+        Eigen::MatrixXd M(4,3);
+        M.row(0) = m1;
+        M.row(1) = m2;
+        M.row(2) = m3;
+        M.row(3) = m4;
+        // std::cout << "M: \n" << M << std::endl;
 
-    Eigen::VectorXd res = compute_homograpy_DLT(M, P);
-    // std::cout << "res: " << res.transpose() << std::endl;
-    Eigen::Map < Eigen::Matrix3d > homography(res.data(), 3, 3);
-    homography.transposeInPlace();
-    std::cout << "Homography: \n" << homography << std::endl;
+        Eigen::VectorXd res = compute_homograpy_DLT(M, P);
+        // std::cout << "res: " << res.transpose() << std::endl;
+        Eigen::Map < Eigen::Matrix3d > homography(res.data(), 3, 3);
+        homography.transposeInPlace();
+        std::cout << "Homography: \n" << homography << std::endl;
+    }
     auto end = std::chrono::high_resolution_clock::now();
+    double tt = std::chrono::duration_cast< std::chrono::microseconds >( end - start ).count();
     std::cout << "elapsed time (ns): "
-                  << std::chrono::duration_cast< std::chrono::nanoseconds >( end - start ).count() << std::endl;
+                  << tt / repeat << std::endl;
     return 0;
 }
