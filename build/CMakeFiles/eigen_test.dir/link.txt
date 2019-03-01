@@ -1,1 +1,0 @@
-/usr/bin/clang++-7  -Wall -Wextra -std=c++14 -fdiagnostics-color=always -march=native -O3 -DNDEBUG   CMakeFiles/eigen_test.dir/main.cpp.o  -o eigen_test 

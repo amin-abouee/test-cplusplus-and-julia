@@ -1,3 +1,0 @@
-/home/amin/Workspace/cplusplus/test-cplusplus-and-julia/build/CMakeFiles/rebuild_cache.dir
-/home/amin/Workspace/cplusplus/test-cplusplus-and-julia/build/CMakeFiles/edit_cache.dir
-/home/amin/Workspace/cplusplus/test-cplusplus-and-julia/build/CMakeFiles/eigen_test.dir
