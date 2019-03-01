@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/amin/Workspace/cplusplus/test-cplusplus-and-julia/build",
+  "command": "/usr/bin/clang++-7   -I/usr/local/include/eigen3 -I/usr/local/include/eigen3/unsupported  -Wall -Wextra -std=c++14 -fdiagnostics-color=always -march=native -O3 -DNDEBUG   -o CMakeFiles/eigen_test.dir/main.cpp.o -c /home/amin/Workspace/cplusplus/test-cplusplus-and-julia/main.cpp",
+  "file": "/home/amin/Workspace/cplusplus/test-cplusplus-and-julia/main.cpp"
+}
+]

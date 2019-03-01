@@ -110,11 +110,12 @@ int main()
         // std::cout << "res: " << res.transpose() << std::endl;
         Eigen::Map < Eigen::Matrix3d > homography(res.data(), 3, 3);
         homography.transposeInPlace();
-        std::cout << "Homography: \n" << homography << std::endl;
+        // std::cout << "Homography: \n" << homography << std::endl;
     }
     auto end = std::chrono::high_resolution_clock::now();
     double tt = std::chrono::duration_cast< std::chrono::microseconds >( end - start ).count();
-    std::cout << "elapsed time (ns): "
+    std::cout << "elapsed time (micro s): "
                   << tt / repeat << std::endl;
+    Eigen::Matrix<double, 3,1> d(1.0, 10.0, 2.0);
     return 0;
 }
